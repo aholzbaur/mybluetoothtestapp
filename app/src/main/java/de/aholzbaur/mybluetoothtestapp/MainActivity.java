@@ -1,9 +1,13 @@
 package de.aholzbaur.mybluetoothtestapp;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +17,7 @@ import de.aholzbaur.mybluetoothtestapp.dialogs.CloseAppOnErrorDialog;
 public class MainActivity extends AppCompatActivity {
     private static final int INTENT_ACTION_ENABLE_BLUETOOTH = 1;
     BluetoothAdapter bluetoothAdapter = null;
+    private BroadcastReceiver bluetoothStateReceiver = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_main);
 
         this.checkBluetoothOnStart();
+
+        this.configBluetoothStateReceiver();
     }
 
     private void checkBluetoothOnStart() {
@@ -50,6 +57,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void configBluetoothStateReceiver() {
+        this.bluetoothStateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+
+                if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                    checkBluetoothStatus();
+                }
+            }
+        };
+
+        this.registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+    }
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
