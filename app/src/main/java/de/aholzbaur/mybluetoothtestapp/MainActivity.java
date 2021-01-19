@@ -1,16 +1,20 @@
 package de.aholzbaur.mybluetoothtestapp;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Set;
 
 import de.aholzbaur.mybluetoothtestapp.dialogs.CloseAppOnErrorDialog;
 
@@ -27,6 +31,24 @@ public class MainActivity extends AppCompatActivity {
         this.checkBluetoothOnStart();
 
         this.configBluetoothStateReceiver();
+
+        this.fillList();
+    }
+
+    private void fillList() {
+        ArrayAdapter<String> devicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_list_item);
+        ListView devicesListView = (ListView) this.findViewById(R.id.devices_list_view);
+        devicesListView.setAdapter(devicesArrayAdapter);
+
+        Set<BluetoothDevice> devicesList = this.bluetoothAdapter.getBondedDevices();
+
+        if (devicesList.size() > 0) {
+            for (BluetoothDevice d : devicesList) {
+                devicesArrayAdapter.add(d.getName().toString());
+            }
+        } else {
+            devicesArrayAdapter.add("No devices bonded");
+        }
     }
 
     private void checkBluetoothOnStart() {
@@ -49,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkBluetoothStatus() {
-        TextView textViewBluetoothStatusValue = this.findViewById(R.id.textViewBluetoothStatusValue);
+        TextView textViewBluetoothStatusValue = (TextView) this.findViewById(R.id.textViewBluetoothStatusValue);
         if (this.bluetoothAdapter.isEnabled()) {
             textViewBluetoothStatusValue.setText(this.getResources().getString(R.string.text_bt_status_on));
         } else {
@@ -71,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
