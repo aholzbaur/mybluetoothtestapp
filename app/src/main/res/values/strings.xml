@@ -4,4 +4,8 @@
     <string name="text_bt_status_off">Off</string>
     <string name="text_bt_status_on">On</string>
     <string name="dialog_close_app_bt_not_supported">Bluetooth is not supported on this device!</string>
+    <string name="text_device_list_paired_devices">Paired devices:</string>
+    <string name="text_device_list_scan_for_new_devices">Scan for new devices</string>
+    <string name="text_device_list_new_devices">New devices:</string>
+    <string name="text_open_list">View device list</string>
 </resources>
